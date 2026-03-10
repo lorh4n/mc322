@@ -1,12 +1,16 @@
 public class Heroi {
+
+   // Atributos
    private String nome;
    private int vida;
    private int escudo;
 
-   public Heroi(String nome, int vida, int escudo) {
+   // Metodos
+
+   public Heroi(String nome, int vida) {
       this.nome = nome;
       this.vida = vida;
-      this.escudo = escudo;
+      this.escudo = 0;
    }
 
    public void receberDano(int dano) {

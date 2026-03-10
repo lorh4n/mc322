@@ -1,13 +1,18 @@
 public class Inimigo {
+
+   // Atributos
+
    private String nome;
    private int vida;
    private int escudo;
    private int dano;
 
-   public Inimigo(String nome, int vida, int escudo, int dano) {
+   // Metodos
+
+   public Inimigo(String nome, int vida, int dano) {
       this.nome = nome;
       this.vida = vida;
-      this.escudo = escudo;
+      this.escudo = 0;
       this.dano = dano;
    }
 

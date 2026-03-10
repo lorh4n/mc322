@@ -1,7 +1,13 @@
 public class CartaDano {
+
+   // Atributos
+   
    private String nome;
    private int custo;
    private int dano;
+
+
+   // Metodos
 
    public CartaDano(String nome, int custo, int dano) {
       this.nome = nome;

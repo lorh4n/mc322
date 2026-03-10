@@ -5,21 +5,26 @@ public class App {
 
         Scanner scanner = new Scanner(System.in);
 
+        // Instaciar Personagens
+
         int heroVida = 10;
         int enemyVida = 10;
         
-        Heroi hero = new Heroi("Julio", heroVida, 2);
-        Inimigo enemy = new Inimigo("Gabriel", enemyVida, 0, 2);
+        Heroi hero = new Heroi("Julio", heroVida);
+        Inimigo enemy = new Inimigo("Gabriel", enemyVida, 2);
 
         CartaDano damageCard = new CartaDano("Carta1", 2, 2);
         CartaEscudo shieldCard = new CartaEscudo("Carta2", 2, 8);
 
+
+        // Quantidade de Energia por turno
         int energyMax = 3;
         int energy = energyMax;
 
+        // Game Loop
         while (enemy.estaVivo() && hero.estaVivo()) {
-            hero.limparEscudo(); // Escudo descartado no começo do turno
-            energy = energyMax;  // Reseta energia no início do turno
+            hero.limparEscudo(); // Escudo descartado anterior
+            energy = energyMax;  // Reseta energia n
             
             boolean turnoAtivo = true;
             while (turnoAtivo && enemy.estaVivo()) {
@@ -64,9 +69,11 @@ public class App {
             }
 
             if (enemy.estaVivo() && hero.estaVivo()) {
-                System.out.println("\n=== TURNO DO INIMIGO ===");
+                System.out.println("\n╔═══\t TURNO DO INIMIGO \t \t═══╗");
                 enemy.atacar(hero);
-                System.out.printf("%s atacou e causou dano!%n", enemy.getNome());
+                System.out.printf("║ \t%s atacou e causou dano! \t║", enemy.getNome());
+                System.out.println("\n╚════════════════════════════════\t═══╝");
+
             }
 
             if (!enemy.estaVivo()) {
@@ -79,4 +86,3 @@ public class App {
     }
 }
 
-// int numero = Integer.parseInt(IO.readln("Digite um número: "));

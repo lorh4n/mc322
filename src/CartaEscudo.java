@@ -1,7 +1,7 @@
 public class CartaEscudo {
-   String nome;
-   int custo;
-   int buff;
+   private String nome;
+   private int custo;
+   private int buff;
 
    public CartaEscudo(String nome, int custo, int buff) {
       this.nome = nome;
