@@ -1,7 +1,12 @@
 public class CartaEscudo {
+
+   // Atributos
    private String nome;
    private int custo;
    private int buff;
+
+
+   // Metodos
 
    public CartaEscudo(String nome, int custo, int buff) {
       this.nome = nome;
