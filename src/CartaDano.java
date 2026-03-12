@@ -18,4 +18,8 @@ public class CartaDano {
    public void usar(Inimigo alvo) {
       alvo.receberDano(dano);
    }
+
+   public int getCusto() {
+      return custo;
+   }
 }

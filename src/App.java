@@ -7,11 +7,11 @@ public class App {
 
         // Instaciar Personagens
 
-        int heroVida = 10;
-        int enemyVida = 10;
+        int heroLife = 15;
+        int enemyLife = 10;
 
-        Heroi hero = new Heroi("Herói", heroVida);
-        Inimigo enemy = new Inimigo("Rato", enemyVida, 2);
+        Heroi hero = new Heroi("Herói", heroLife);
+        Inimigo enemy = new Inimigo("Rato", enemyLife, 4);
 
         CartaDano damageCard = new CartaDano("Carta1", 2, 2);
         CartaEscudo shieldCard = new CartaEscudo("Carta2", 2, 8);
@@ -28,8 +28,8 @@ public class App {
             boolean turnoAtivo = true;
             while (turnoAtivo && enemy.estaVivo()) {
                 String statusHeroi = String.format("%s: %d/%d HP | Escudo: %d", hero.getNome(), hero.getVida(),
-                        heroVida, hero.getEscudo());
-                String statusInimigo = String.format("%s: %d/%d HP", enemy.getNome(), enemy.getVida(), enemyVida);
+                        heroLife, hero.getEscudo());
+                String statusInimigo = String.format("%s: %d/%d HP", enemy.getNome(), enemy.getVida(), enemyLife);
                 String energiaTxt = String.format("Energia: %d/%d", energy, energyMax);
 
                 System.out.println("\n╔══════════════════════════════════════╗");
@@ -51,17 +51,17 @@ public class App {
                     System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 
                     if (escolha == 1) {
-                        if (energy >= 2) {
+                        if (energy >= damageCard.getCusto()) {
                             damageCard.usar(enemy);
-                            energy -= 2;
+                            energy -= damageCard.getCusto();
                             System.out.println("Voce usou Carta de Dano!");
                         } else {
                             System.out.println("Energia insuficiente!");
                         }
                     } else if (escolha == 2) {
-                        if (energy >= 2) {
+                        if (energy >= shieldCard.getCusto()) {
                             shieldCard.usar(hero);
-                            energy -= 2;
+                            energy -= shieldCard.getCusto();
                             System.out.println("Voce usou Carta de Escudo!");
                         } else {
                             System.out.println("Energia insuficiente!");
