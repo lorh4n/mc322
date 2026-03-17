@@ -22,7 +22,7 @@ public class App {
 
         // Game Loop
         while (enemy.estaVivo() && hero.estaVivo()) {
-            hero.limparEscudo(); // Escudo descartado anterior
+            hero.setEscudo(0); // Escudo descartado anterior
             energy = energyMax; // Reseta energia 
 
             boolean turnoAtivo = true;
