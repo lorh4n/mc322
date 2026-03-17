@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class Baralho {
 
@@ -79,8 +80,7 @@ public class Baralho {
 
             System.out.println(
                     i + " - " +
-                    maoJogador.get(i).getNome()
-            );
+                            maoJogador.get(i).getNome());
         }
     }
 
@@ -101,5 +101,48 @@ public class Baralho {
 
     public int tamanhoMao() {
         return maoJogador.size();
+    }
+
+    public void popularBaralho(int quantidade) {
+
+        Random gerador = new Random();
+        for (int i = 0; i < quantidade; i++) {
+            int custo = gerador.nextInt(4);
+            int valor = gerador.nextInt(7);
+            boolean tipo = gerador.nextBoolean();
+
+            if (tipo) {
+                CartaEscudo carta = new CartaEscudo("Carta " + i, custo, null, valor);
+                adicionarCarta(carta);
+            } else {
+                CartaDano carta = new CartaDano("Carta " + i, custo, null, valor);
+                adicionarCarta(carta);
+            }
+
+        }
+
+    }
+
+    public void mostrarDescarte() {
+        System.out.println("\n╔════════════════════════════╗");
+        System.out.println("║     PILHA DE DESCARTE      ║");
+        System.out.println("╠════════════════════════════╣");
+
+        if (pilhaDescarte.isEmpty()) {
+            System.out.println("║ (vazia)                    ║");
+        } else {
+            int limite = Math.min(5, pilhaDescarte.size());
+
+            for (int i = pilhaDescarte.size() - limite; i < pilhaDescarte.size(); i++) {
+                String nome = pilhaDescarte.get(i).getNome();
+                System.out.printf("║ %-26s ║%n", nome);
+            }
+
+            if (pilhaDescarte.size() > 5) {
+                System.out.printf("║ ... (%d cartas no total)   ║%n", pilhaDescarte.size());
+            }
+        }
+
+        System.out.println("╚════════════════════════════╝");
     }
 }
