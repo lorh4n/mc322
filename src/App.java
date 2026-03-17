@@ -15,6 +15,21 @@ public class App {
 
         CartaDano damageCard = new CartaDano("Carta Dano 1", 2, "Alvo recebe Dano", 2);
         CartaEscudo shieldCard = new CartaEscudo("Carta Proteção 1", 2, "Voce recebe Escudo", 2);
+        CartaDano damageCard1 = new CartaDano("Carta Dano sofrida", 3, "Alvo recebe Dano", 1);
+        CartaEscudo shieldCard1 = new CartaEscudo("Carta Proteção especial 1", 1, "Voce recebe Escudo", 4);
+        CartaDano damageCard2 = new CartaDano("Carta Dano especial", 1, "Alvo recebe Dano", 7);
+        CartaEscudo shieldCard2 = new CartaEscudo("Carta Proteção sofrida", 3, "Voce recebe Escudo", 1);
+
+
+        Baralho baralho = new Baralho();
+
+        baralho.adicionarCarta(damageCard);
+        baralho.adicionarCarta(shieldCard);
+        baralho.adicionarCarta(damageCard1);
+        baralho.adicionarCarta(shieldCard1);
+        baralho.adicionarCarta(damageCard2);
+        baralho.adicionarCarta(shieldCard2);
+        baralho.embaralhar();
 
         // Quantidade de Energia por turno
         int energyMax = 3;
