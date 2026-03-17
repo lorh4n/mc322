@@ -13,8 +13,8 @@ public class App {
         Heroi hero = new Heroi("Herói", heroLife);
         Inimigo enemy = new Inimigo("Rato", enemyLife, 4);
 
-        CartaDano damageCard = new CartaDano("Carta1", 2, 2);
-        CartaEscudo shieldCard = new CartaEscudo("Carta2", 2, 8);
+        CartaDano damageCard = new CartaDano("Carta Dano 1", 2, "Alvo recebe Dano", 2);
+        CartaEscudo shieldCard = new CartaEscudo("Carta Proteção 1", 2, "Voce recebe Escudo", 2);
 
         // Quantidade de Energia por turno
         int energyMax = 3;
@@ -23,7 +23,7 @@ public class App {
         // Game Loop
         while (enemy.estaVivo() && hero.estaVivo()) {
             hero.setEscudo(0); // Escudo descartado anterior
-            energy = energyMax; // Reseta energia 
+            energy = energyMax; // Reseta energia
 
             boolean turnoAtivo = true;
             while (turnoAtivo && enemy.estaVivo()) {
@@ -46,7 +46,6 @@ public class App {
 
                 if (scanner.hasNextInt()) {
                     int escolha = scanner.nextInt();
-
 
                     System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 

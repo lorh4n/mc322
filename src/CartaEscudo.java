@@ -1,24 +1,18 @@
-public class CartaEscudo {
+public class CartaEscudo extends Carta {
 
    // Atributos
-   private String nome;
-   private int custo;
    private int protecao;
-
 
    // Metodos
 
-   public CartaEscudo(String nome, int custo, int protecao) {
-      this.nome = nome;
-      this.custo = custo;
+   public CartaEscudo(String nome, int custo, String descricao, int protecao) {
+      super(nome, custo, descricao);
       this.protecao = protecao;
    }
 
-   public void usar(Heroi alvo) {
-      alvo.ganharEscudo(protecao);
-   }
-
-   public int getCusto() {
-      return custo;
+   public void usar(Entidade alvo) {
+      if (alvo instanceof Heroi) {
+         ((Heroi) alvo).ganharEscudo(protecao);
+      }
    }
 }

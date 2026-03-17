@@ -1,25 +1,19 @@
-public class CartaDano {
+public class CartaDano extends Carta {
 
    // Atributos
-   
-   private String nome;
-   private int custo;
    private int dano;
-
 
    // Metodos
 
-   public CartaDano(String nome, int custo, int dano) {
-      this.nome = nome;
-      this.custo = custo;
+   public CartaDano(String nome, int custo, String descricao, int dano) {
+      super(nome, custo, descricao);
       this.dano = dano;
    }
 
-   public void usar(Inimigo alvo) {
-      alvo.receberDano(dano);
+   public void usar(Entidade alvo) {
+      if (alvo instanceof Heroi) {
+         ((Inimigo) alvo).receberDano(dano);
+      }
    }
 
-   public int getCusto() {
-      return custo;
-   }
 }
