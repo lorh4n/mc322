@@ -49,27 +49,32 @@ public class App {
 
                     System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 
-                    if (escolha == 1) {
-                        if (energy >= damageCard.getCusto()) {
-                            damageCard.usar(enemy);
-                            energy -= damageCard.getCusto();
-                            System.out.println("Voce usou Carta de Dano!");
-                        } else {
-                            System.out.println("Energia insuficiente!");
-                        }
-                    } else if (escolha == 2) {
-                        if (energy >= shieldCard.getCusto()) {
-                            shieldCard.usar(hero);
-                            energy -= shieldCard.getCusto();
-                            System.out.println("Voce usou Carta de Escudo!");
-                        } else {
-                            System.out.println("Energia insuficiente!");
-                        }
-                    } else if (escolha == 3) {
-                        turnoAtivo = false;
-                        System.out.println("Voce encerrou seu turno.");
-                    } else {
-                        System.out.println("Opcao invalida!");
+                    switch(escolha) {
+                        case 1:
+                            if (energy >= damageCard.getCusto()) {
+                                damageCard.usar(enemy);
+                                energy -= damageCard.getCusto();
+                                System.out.println("Voce usou Carta de Dano!");
+                            } else {
+                                System.out.println("Energia insuficiente!");
+                            }
+                            break;
+                        case 2:
+                            if (energy >= shieldCard.getCusto()) {
+                                shieldCard.usar(hero);
+                                energy -= shieldCard.getCusto();
+                                System.out.println("Voce usou Carta de Escudo!");
+                            } else {
+                                System.out.println("Energia insuficiente!");
+                            }
+                            break;
+                        case 3:
+                            turnoAtivo = false;
+                            System.out.println("Voce encerrou seu turno.");
+                            break;
+                        default:
+                            System.out.println("Opcao invalida!");
+                            break;
                     }
                 } else {
                     scanner.next(); // Limpa o buffer
