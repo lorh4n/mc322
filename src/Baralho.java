@@ -39,7 +39,7 @@ public class Baralho {
         }
     }
 
-    public void usarCarta(int index) {
+    public void usarCarta(int index, Entidade alvo) {
 
         if (index < 0 || index >= maoJogador.size()) {
             System.out.println("Carta inválida");
@@ -48,7 +48,7 @@ public class Baralho {
 
         Carta carta = maoJogador.remove(index);
 
-        carta.usar();
+        carta.usar(alvo);
 
         pilhaDescarte.add(carta);
     }
