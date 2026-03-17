@@ -40,18 +40,28 @@ public class Baralho {
         }
     }
 
-    public void usarCarta(int index, Entidade alvo) {
+    public int usarCarta(int index, Entidade alvo, Entidade heroi, int energy) {
 
         if (index < 0 || index >= maoJogador.size()) {
             System.out.println("Carta inválida");
-            return;
+            return -1;
         }
 
         Carta carta = maoJogador.remove(index);
 
-        carta.usar(alvo);
+        if(carta.getCusto() > energy){
+            maoJogador.add(carta);
+            return -1;
+        }
+
+        if(carta instanceof CartaDano) 
+            carta.usar(alvo);
+        else
+            carta.usar(heroi);
 
         pilhaDescarte.add(carta);
+
+        return carta.getCusto();
     }
 
     private void reciclarDescarte() {
@@ -71,17 +81,28 @@ public class Baralho {
 
     public void mostrarMao() {
 
+        System.out.println("╔══════════════════════════════════════╗");
+        System.out.println("║           CARTAS NA MÃO             ║");
+        System.out.println("╠══════════════════════════════════════╣");
+
         if (maoJogador.isEmpty()) {
-            System.out.println("Mão vazia");
-            return;
+
+            System.out.println("║ Nenhuma carta disponível            ║");
+
+        } else {
+
+            for (int i = 0; i < maoJogador.size(); i++) {
+
+                String nome = maoJogador.get(i).getNome();
+                String descricao = maoJogador.get(i).getDescricao();
+
+                System.out.printf("║ %d : %s - %-30s ║\n", i, nome, descricao);
+            }
         }
 
-        for (int i = 0; i < maoJogador.size(); i++) {
-
-            System.out.println(
-                    i + " - " +
-                            maoJogador.get(i).getNome());
-        }
+        System.out.println("╠══════════════════════════════════════╣");
+        System.out.println("║ -1 - Encerrar turno                 ║");
+        System.out.println("╚══════════════════════════════════════╝");
     }
 
     public void descartarMao() {

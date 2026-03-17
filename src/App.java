@@ -42,6 +42,8 @@ public class App {
             hero.setEscudo(0); // Escudo descartado anterior
             energy = energyMax; // Reseta energia
 
+            baralho.comprarCartas(2);
+
             boolean turnoAtivo = true;
             while (turnoAtivo && enemy.estaVivo()) {
                 String statusHeroi = String.format("%s: %d/%d HP | Escudo: %d", hero.getNome(), hero.getVida(),
@@ -54,11 +56,12 @@ public class App {
                 System.out.printf("║ VS %-33s ║%n", statusInimigo);
                 System.out.println("╠══════════════════════════════════════╣");
                 System.out.printf("║ %-36s ║%n", energiaTxt);
-                System.out.println("╠══════════════════════════════════════╣");
-                System.out.println("║ 1 - Usar Carta de Dano               ║");
-                System.out.println("║ 2 - Usar Carta de Escudo             ║");
-                System.out.println("║ 3 - Encerrar turno                   ║");
-                System.out.println("╚══════════════════════════════════════╝");
+                //System.out.println("╠══════════════════════════════════════╣");
+                //System.out.println("║ 1 - Usar Carta de Dano               ║");
+                //System.out.println("║ 2 - Usar Carta de Escudo             ║");
+                //System.out.println("║ 3 - Encerrar turno                   ║");
+                //System.out.println("╚══════════════════════════════════════╝");
+                baralho.mostrarMao();
                 System.out.print("Escolha: ");
 
                 if (scanner.hasNextInt()) {
@@ -66,6 +69,20 @@ public class App {
 
                     System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 
+                    if(escolha == -1){
+                        turnoAtivo = false;
+                        System.out.println("Voce encerrou seu turno.");
+                    } else if(escolha >= baralho.tamanhoMao()) {
+                        System.out.println("Opcao invalida!");
+                    } else {
+                        int retorno = baralho.usarCarta(escolha, enemy, hero, energy);
+                        if(retorno == -1) System.out.println("Energia insuficiente!");
+                        else { 
+                            System.out.printf("Voce usou a carta %d!\n", escolha); 
+                            energy -= retorno;
+                        }
+                    }
+/*
                     switch(escolha) {
                         case 1:
                             if (energy >= damageCard.getCusto()) {
@@ -92,7 +109,7 @@ public class App {
                         default:
                             System.out.println("Opcao invalida!");
                             break;
-                    }
+                    }*/
                 } else {
                     scanner.next(); // Limpa o buffer
                 }
