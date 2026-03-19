@@ -10,9 +10,9 @@ public class CartaEscudo extends Carta {
       this.protecao = protecao;
    }
 
-   public void usar(Entidade alvo) {
-      if (alvo instanceof Heroi) {
-         ((Heroi) alvo).ganharEscudo(protecao);
+   public void usar(Entidade usuario, Entidade alvo) {
+      if (usuario != null) {
+         usuario.ganharEscudo(protecao);
       }
    }
 }

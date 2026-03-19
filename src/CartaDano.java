@@ -10,9 +10,9 @@ public class CartaDano extends Carta {
       this.dano = dano;
    }
 
-   public void usar(Entidade alvo) {
-      if (alvo instanceof Heroi) {
-         ((Inimigo) alvo).receberDano(dano);
+   public void usar(Entidade usuario, Entidade alvo) {
+      if (alvo != null) {
+         alvo.receberDano(dano);
       }
    }
 

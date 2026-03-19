@@ -13,7 +13,7 @@ public abstract class Carta {
       this.descricao = descrição;
    }
 
-   public abstract void usar(Entidade alvo);
+   public abstract void usar(Entidade usuario, Entidade alvo);
 
 
    public int getCusto() {

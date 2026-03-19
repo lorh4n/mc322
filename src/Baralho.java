@@ -34,8 +34,8 @@ public class Baralho {
             if (!pilhaCompra.isEmpty()) {
 
                 Carta carta = pilhaCompra.remove(0);
-
                 maoJogador.add(carta);
+                System.out.println(" > Você comprou: " + carta.getNome());
             }
         }
     }
@@ -54,10 +54,7 @@ public class Baralho {
             return -1;
         }
 
-        if(carta instanceof CartaDano) 
-            carta.usar(alvo);
-        else
-            carta.usar(heroi);
+        carta.usar(heroi, alvo);
 
         pilhaDescarte.add(carta);
 
@@ -82,26 +79,28 @@ public class Baralho {
     public void mostrarMao() {
 
         System.out.println("╔══════════════════════════════════════╗");
-        System.out.println("║           CARTAS NA MÃO             ║");
+        System.out.println("║            CARTAS NA MÃO             ║");
         System.out.println("╠══════════════════════════════════════╣");
 
         if (maoJogador.isEmpty()) {
 
-            System.out.println("║ Nenhuma carta disponível            ║");
+            System.out.println("║ Nenhuma carta disponível             ║");
 
         } else {
 
             for (int i = 0; i < maoJogador.size(); i++) {
 
-                String nome = maoJogador.get(i).getNome();
-                String descricao = maoJogador.get(i).getDescricao();
+                Carta carta = maoJogador.get(i);
+                String line1 = String.format("%d : %s (Custo: %d)", i, carta.getNome(), carta.getCusto());
+                String line2 = "    " + carta.getDescricao();
 
-                System.out.printf("║ %d : %s - %-30s ║\n", i, nome, descricao);
+                System.out.printf("║ %-36s ║\n", line1);
+                System.out.printf("║ %-36s ║\n", line2);
             }
         }
 
         System.out.println("╠══════════════════════════════════════╣");
-        System.out.println("║ -1 - Encerrar turno                 ║");
+        System.out.println("║ -1 - Encerrar turno                  ║");
         System.out.println("╚══════════════════════════════════════╝");
     }
 
@@ -126,17 +125,22 @@ public class Baralho {
 
     public void popularBaralho(int quantidade) {
 
+        String[] nomesDano = {"Golpe", "Apunhalada", "Explosão Sangrenta", "Corte Rápido", "Fúria"};
+        String[] nomesEscudo = {"Defesa", "Barreira", "Escudo de Ferro", "Esquiva", "Muralha"};
+
         Random gerador = new Random();
         for (int i = 0; i < quantidade; i++) {
-            int custo = gerador.nextInt(4);
-            int valor = gerador.nextInt(7);
+            int custo = gerador.nextInt(3) + 1;
+            int valor = gerador.nextInt(6) + 2;
             boolean tipo = gerador.nextBoolean();
 
             if (tipo) {
-                CartaEscudo carta = new CartaEscudo("Carta " + i, custo, null, valor);
+                String nome = nomesEscudo[gerador.nextInt(nomesEscudo.length)];
+                CartaEscudo carta = new CartaEscudo(nome, custo, "Ganha " + valor + " de Escudo", valor);
                 adicionarCarta(carta);
             } else {
-                CartaDano carta = new CartaDano("Carta " + i, custo, null, valor);
+                String nome = nomesDano[gerador.nextInt(nomesDano.length)];
+                CartaDano carta = new CartaDano(nome, custo, "Causa " + valor + " de dano ao inimigo", valor);
                 adicionarCarta(carta);
             }
 
