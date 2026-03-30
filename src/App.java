@@ -1,24 +1,52 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
-public class App {
 
-    // Helper para esperar o usuário apertar Enter
-    private static void continuar(Scanner scanner) {
+public class App implements Publisher { 
+
+    private List<Subscriber> subscribers = new ArrayList<>();
+    
+    private List<Subscriber> removerFila = new ArrayList<>();
+
+    private void continuar(Scanner scanner) {
         System.out.println("\n[ Pressione ENTER para continuar... ]");
         scanner.nextLine();
     }
 
-    // limpar o terminal
-    private static void limparTela() {
+    private void limparTela() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
-    public static void main(String[] args) throws Exception {
+    @Override
+    public void inscrever(Subscriber s) {
+        if (!subscribers.contains(s)) {
+            subscribers.add(s); // [cite: 89]
+        }
+    }
 
+    @Override
+    public void desinscrever(Subscriber s) {
+        removerFila.add(s);
+    }
+
+    @Override
+    public void notificar(TipoEvento evento) {
+        for (Subscriber s : subscribers) {
+            s.serNotificado(evento);
+        }
+        
+        if (!removerFila.isEmpty()) {
+            subscribers.removeAll(removerFila);
+            removerFila.clear();
+        }
+    }
+    // ----------------------------
+
+    public void iniciarCombate() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-        // Instanciar Personagens
         int heroLife = 15;
         int enemyLife = 10;
 
@@ -36,7 +64,6 @@ public class App {
         System.out.println("⚔️  O COMBATE COMEÇOU! ⚔️");
         continuar(scanner);
 
-        // Início do jogo: Começa com 1 carta
         limparTela();
         baralho.comprarCartas(1);
         continuar(scanner);
@@ -47,10 +74,11 @@ public class App {
             hero.setEscudo(0); 
             energy = energyMax; 
 
+            notificar(TipoEvento.INICIO_TURNO_JOGADOR);
+
             boolean turnoAtivo = true;
             while (turnoAtivo && enemy.estaVivo() && hero.estaVivo()) {
-                String statusHeroi = String.format("%s: %d/%d HP | Escudo: %d", hero.getNome(), hero.getVida(),
-                        heroLife, hero.getEscudo());
+                String statusHeroi = String.format("%s: %d/%d HP | Escudo: %d", hero.getNome(), hero.getVida(), heroLife, hero.getEscudo());
                 String statusInimigo = String.format(Rato.CorOutput + "%s: %d/%d HP" + Rato.Reset, enemy.getNome(), enemy.getVida(), enemyLife);
                 String intencaoInimigo = String.format(Rato.CorOutput + "Intenção: %s" + Rato.Reset, enemy.anunciarIntencao());
                 String energiaTxt = String.format("Energia: %d/%d", energy, energyMax);
@@ -66,7 +94,7 @@ public class App {
                 System.out.print("Escolha: ");
 
                 String entrada = scanner.nextLine();
-                if (entrada.isEmpty()) continue; // Evita erro se o usuário só der Enter sem escolher
+                if (entrada.isEmpty()) continue;
 
                 try {
                     int escolha = Integer.parseInt(entrada);
@@ -80,7 +108,7 @@ public class App {
                         System.out.println("Opção inválida!");
                         continuar(scanner);
                     } else {
-                        int retorno = baralho.usarCarta(escolha, enemy, hero, energy);
+                        int retorno = baralho.usarCarta(escolha, enemy, hero, energy, this);
                         if(retorno == -1) {
                             System.out.println("Energia insuficiente!");
                             continuar(scanner);
@@ -103,18 +131,26 @@ public class App {
                     limparTela();
                 }
             }
-            
+       
+            notificar(TipoEvento.FIM_TURNO_JOGADOR);
+
             // Turno do Inimigo
             if (enemy.estaVivo() && hero.estaVivo()) {
                 limparTela();
+                
+                notificar(TipoEvento.INICIO_TURNO_INIMIGO);
+
                 System.out.println("\n" + Rato.CorOutput + "╔══════════════════════════════════════╗");
                 System.out.println("║           TURNO DO INIMIGO           ║");
                 System.out.println("╠══════════════════════════════════════╣" + Rato.Reset);
+                
                 enemy.atacar(hero);
                 String acao = " > " + enemy.getNome() + " atacou e causou dano!";
                 System.out.printf("║ %-36s ║%n", acao);
                 System.out.println(Rato.CorOutput + "╚══════════════════════════════════════╝" + Rato.Reset);
                 continuar(scanner);
+
+                notificar(TipoEvento.FIM_TURNO_INIMIGO);
             }
 
             if (!enemy.estaVivo()) {
@@ -133,5 +169,10 @@ public class App {
             }
         }
         scanner.close();
+    }
+
+    public static void main(String[] args) throws Exception {
+        App jogo = new App();
+        jogo.iniciarCombate();
     }
 }
