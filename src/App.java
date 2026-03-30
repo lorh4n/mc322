@@ -108,7 +108,7 @@ public class App implements Publisher {
                         System.out.println("Opção inválida!");
                         continuar(scanner);
                     } else {
-                        int retorno = baralho.usarCarta(escolha, enemy, hero, energy);
+                        int retorno = baralho.usarCarta(escolha, enemy, hero, energy, this);
                         if(retorno == -1) {
                             System.out.println("Energia insuficiente!");
                             continuar(scanner);
