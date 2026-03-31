@@ -11,7 +11,10 @@ public abstract class Inimigo extends Entidade {
 
    public void atacar(Heroi alvo) {
       alvo.receberDano(this.dano);
+      System.out.printf("║ > %-33s ║%n", getNome() + " atacou causando " + dano + " de dano!");
    }
+
+   public abstract void executarAcao(Heroi alvo, Publisher publisher);
 
    public abstract String anunciarIntencao();
 

@@ -100,8 +100,19 @@ public class Baralho {
         }
 
         System.out.println("╠══════════════════════════════════════╣");
-        System.out.println("║ -1 - Encerrar turno                  ║");
+        System.out.println("║ -1 : Encerrar turno                  ║");
+        System.out.println("║ -2 : Descartar uma carta             ║");
         System.out.println("╚══════════════════════════════════════╝");
+    }
+
+    public boolean descartarCarta(int index) {
+        if (index < 0 || index >= maoJogador.size()) {
+            return false;
+        }
+        Carta carta = maoJogador.remove(index);
+        pilhaDescarte.add(carta);
+        System.out.println(" > Você descartou: " + carta.getNome());
+        return true;
     }
 
     public void descartarMao() {
@@ -121,6 +132,11 @@ public class Baralho {
 
     public int tamanhoMao() {
         return maoJogador.size();
+    }
+
+    public Carta getCarta(int index) {
+        if (index < 0 || index >= maoJogador.size()) return null;
+        return maoJogador.get(index);
     }
 
     public void popularBaralho(int quantidade) {
