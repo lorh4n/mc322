@@ -9,8 +9,9 @@ public abstract class Carta {
       this.descricao = descrição;
    }
 
-   // MODIFICADO: Agora recebe o Publisher
    public abstract void usar(Entidade usuario, Entidade alvo, Publisher publisher);
+
+   public boolean precisaAlvo() { return false; }
 
    public int getCusto() { 
       return custo; 

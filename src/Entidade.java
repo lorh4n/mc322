@@ -48,10 +48,17 @@ public abstract class Entidade {
    }
 
    public void receberDano(int dano) {
-      if (this.escudo - dano >= 0) {
+      if (this.escudo >= dano) {
+         System.out.println(" > Escudo absorveu " + dano + " de dano! (Escudo: " + this.escudo + " → " + (this.escudo - dano) + ")");
          this.escudo -= dano;
       } else {
-         this.vida += this.escudo - dano;
+         int danoPenetrou = dano - this.escudo;
+         if (this.escudo > 0) {
+            System.out.println(" > Escudo absorveu " + this.escudo + " de dano! (Escudo: " + this.escudo + " → 0)");
+            System.out.println(" > " + danoPenetrou + " de dano passou pelo escudo!");
+         }
+         this.vida -= danoPenetrou;
+         if (this.vida < 0) this.vida = 0;
          this.escudo = 0;
       }
    }

@@ -2,11 +2,9 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class App implements Publisher { 
+public class App implements Publisher {
 
     private List<Subscriber> subscribers = new ArrayList<>();
-    
     private List<Subscriber> removerFila = new ArrayList<>();
 
     private void continuar(Scanner scanner) {
@@ -22,7 +20,7 @@ public class App implements Publisher {
     @Override
     public void inscrever(Subscriber s) {
         if (!subscribers.contains(s)) {
-            subscribers.add(s); // [cite: 89]
+            subscribers.add(s);
         }
     }
 
@@ -36,22 +34,75 @@ public class App implements Publisher {
         for (Subscriber s : subscribers) {
             s.serNotificado(evento);
         }
-        
         if (!removerFila.isEmpty()) {
             subscribers.removeAll(removerFila);
             removerFila.clear();
         }
     }
-    // ----------------------------
+
+    private void comprarCartasComEscolha(Scanner scanner, Baralho baralho) {
+        int disponiveis = baralho.tamanhoCompra() + baralho.tamanhoDescarte();
+        int maxCompra = Math.min(5, disponiveis);
+
+        if (maxCompra == 0) {
+            System.out.println("Sem cartas disponíveis para comprar.");
+            return;
+        }
+
+        System.out.printf("Quantas cartas deseja comprar? (1-%d): ", maxCompra);
+        int quantidade = 1;
+        try {
+            quantidade = Integer.parseInt(scanner.nextLine().trim());
+            if (quantidade < 1) quantidade = 1;
+            if (quantidade > maxCompra) quantidade = maxCompra;
+        } catch (NumberFormatException e) {
+            quantidade = 1;
+        }
+        baralho.comprarCartas(quantidade);
+    }
+
+    private List<Inimigo> inimigosVivos(List<Inimigo> inimigos) {
+        List<Inimigo> vivos = new ArrayList<>();
+        for (Inimigo ini : inimigos) {
+            if (ini.estaVivo()) vivos.add(ini);
+        }
+        return vivos;
+    }
+
+    private boolean algumVivo(List<Inimigo> inimigos) {
+        return !inimigosVivos(inimigos).isEmpty();
+    }
+
+    private Inimigo selecionarAlvo(Scanner scanner, List<Inimigo> inimigos) {
+        List<Inimigo> vivos = inimigosVivos(inimigos);
+
+        if (vivos.size() == 1) return vivos.get(0);
+
+        System.out.println("Escolha o alvo:");
+        for (int i = 0; i < inimigos.size(); i++) {
+            if (inimigos.get(i).estaVivo()) {
+                System.out.printf("  [%d] %s (%d HP)%n", i, inimigos.get(i).getNome(), inimigos.get(i).getVida());
+            }
+        }
+        System.out.print("Alvo: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine().trim());
+            if (idx >= 0 && idx < inimigos.size() && inimigos.get(idx).estaVivo()) {
+                return inimigos.get(idx);
+            }
+        } catch (NumberFormatException e) {}
+        return vivos.get(0);
+    }
 
     public void iniciarCombate() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         int heroLife = 15;
-        int enemyLife = 10;
-
         Heroi hero = new Heroi("Herói", heroLife);
-        Inimigo enemy = new Rato(enemyLife, 4);
+
+        List<Inimigo> inimigos = new ArrayList<>();
+        inimigos.add(new Rato(10, 4));
+        inimigos.add(new Rato(8, 3));
 
         Baralho baralho = new Baralho();
         baralho.popularBaralho(10);
@@ -65,30 +116,35 @@ public class App implements Publisher {
         continuar(scanner);
 
         limparTela();
-        baralho.comprarCartas(1);
+        comprarCartasComEscolha(scanner, baralho);
         continuar(scanner);
 
-        // Game Loop
-        while (enemy.estaVivo() && hero.estaVivo()) {
+        while (algumVivo(inimigos) && hero.estaVivo()) {
             limparTela();
-            hero.setEscudo(0); 
-            energy = energyMax; 
+            hero.setEscudo(0);
+            energy = energyMax;
 
             notificar(TipoEvento.INICIO_TURNO_JOGADOR);
 
             boolean turnoAtivo = true;
-            while (turnoAtivo && enemy.estaVivo() && hero.estaVivo()) {
-                String statusHeroi = String.format("%s: %d/%d HP | Escudo: %d", hero.getNome(), hero.getVida(), heroLife, hero.getEscudo());
-                String statusInimigo = String.format(Rato.CorOutput + "%s: %d/%d HP" + Rato.Reset, enemy.getNome(), enemy.getVida(), enemyLife);
-                String intencaoInimigo = String.format(Rato.CorOutput + "Intenção: %s" + Rato.Reset, enemy.anunciarIntencao());
-                String energiaTxt = String.format("Energia: %d/%d", energy, energyMax);
-
+            while (turnoAtivo && algumVivo(inimigos) && hero.estaVivo()) {
                 System.out.println("\n╔══════════════════════════════════════╗");
-                System.out.printf("║ %-36s ║%n", statusHeroi);
-                System.out.printf("║ VS %-33s ║%n", statusInimigo);
-                System.out.printf("║ %-36s ║%n", intencaoInimigo);
+                System.out.printf("║ %-36s ║%n",
+                    hero.getNome() + ": " + hero.getVida() + "/" + heroLife + " HP | Escudo: " + hero.getEscudo());
                 System.out.println("╠══════════════════════════════════════╣");
-                System.out.printf("║ %-36s ║%n", energiaTxt);
+
+                for (int i = 0; i < inimigos.size(); i++) {
+                    Inimigo ini = inimigos.get(i);
+                    if (ini.estaVivo()) {
+                        System.out.printf("║ [%d] " + Rato.CorOutput + "%-31s" + Rato.Reset + " ║%n",
+                            i, ini.getNome() + ": " + ini.getVida() + " HP");
+                        System.out.printf("║     " + Rato.CorOutput + "%-31s" + Rato.Reset + " ║%n",
+                            "→ " + ini.anunciarIntencao());
+                    }
+                }
+
+                System.out.println("╠══════════════════════════════════════╣");
+                System.out.printf("║ %-36s ║%n", "Energia: " + energy + "/" + energyMax);
 
                 baralho.mostrarMao();
                 System.out.print("Escolha: ");
@@ -100,22 +156,42 @@ public class App implements Publisher {
                     int escolha = Integer.parseInt(entrada);
                     System.out.println("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 
-                    if(escolha == -1){
+                    if (escolha == -1) {
                         turnoAtivo = false;
                         System.out.println("Você encerrou seu turno.");
                         continuar(scanner);
-                    } else if(escolha >= baralho.tamanhoMao() || escolha < -1) {
+                    } else if (escolha == -2) {
+                        if (baralho.tamanhoMao() == 0) {
+                            System.out.println("Nenhuma carta na mão para descartar.");
+                        } else {
+                            baralho.mostrarMao();
+                            System.out.print("Qual carta deseja descartar? (0-" + (baralho.tamanhoMao() - 1) + "): ");
+                            try {
+                                int idx = Integer.parseInt(scanner.nextLine().trim());
+                                if (!baralho.descartarCarta(idx)) {
+                                    System.out.println("Índice inválido.");
+                                }
+                            } catch (NumberFormatException ex) {
+                                System.out.println("Entrada inválida.");
+                            }
+                        }
+                        continuar(scanner);
+                    } else if (escolha >= baralho.tamanhoMao() || escolha < -2) {
                         System.out.println("Opção inválida!");
                         continuar(scanner);
                     } else {
-                        int retorno = baralho.usarCarta(escolha, enemy, hero, energy, this);
-                        if(retorno == -1) {
+                        Carta carta = baralho.getCarta(escolha);
+                        Inimigo alvo = (carta != null && carta.precisaAlvo())
+                            ? selecionarAlvo(scanner, inimigos)
+                            : null;
+                        int retorno = baralho.usarCarta(escolha, alvo, hero, energy, this);
+                        if (retorno == -1) {
                             System.out.println("Energia insuficiente!");
                             continuar(scanner);
-                        } else { 
-                            System.out.printf("Você usou a carta %d!\n", escolha); 
+                        } else {
+                            System.out.printf("Você usou a carta %d!\n", escolha);
                             energy -= retorno;
-                            if (!enemy.estaVivo() || !hero.estaVivo()) {
+                            if (!algumVivo(inimigos) || !hero.estaVivo()) {
                                 continuar(scanner);
                                 break;
                             }
@@ -126,34 +202,35 @@ public class App implements Publisher {
                     System.out.println("Por favor, digite um número válido.");
                     continuar(scanner);
                 }
-                
-                if (turnoAtivo && enemy.estaVivo() && hero.estaVivo()) {
+
+                if (turnoAtivo && algumVivo(inimigos) && hero.estaVivo()) {
                     limparTela();
                 }
             }
-       
+
             notificar(TipoEvento.FIM_TURNO_JOGADOR);
 
-            // Turno do Inimigo
-            if (enemy.estaVivo() && hero.estaVivo()) {
+            if (algumVivo(inimigos) && hero.estaVivo()) {
                 limparTela();
-                
                 notificar(TipoEvento.INICIO_TURNO_INIMIGO);
 
                 System.out.println("\n" + Rato.CorOutput + "╔══════════════════════════════════════╗");
-                System.out.println("║           TURNO DO INIMIGO           ║");
+                System.out.println("║         TURNO DOS INIMIGOS           ║");
                 System.out.println("╠══════════════════════════════════════╣" + Rato.Reset);
-                
-                enemy.atacar(hero);
-                String acao = " > " + enemy.getNome() + " atacou e causou dano!";
-                System.out.printf("║ %-36s ║%n", acao);
+
+                for (Inimigo ini : inimigos) {
+                    if (ini.estaVivo()) {
+                        ini.executarAcao(hero, this);
+                    }
+                }
+
                 System.out.println(Rato.CorOutput + "╚══════════════════════════════════════╝" + Rato.Reset);
                 continuar(scanner);
 
                 notificar(TipoEvento.FIM_TURNO_INIMIGO);
             }
 
-            if (!enemy.estaVivo()) {
+            if (!algumVivo(inimigos)) {
                 limparTela();
                 System.out.println("\n🏆 [ VITÓRIA ] VOCÊ VENCEU!");
                 continuar(scanner);
@@ -164,7 +241,7 @@ public class App implements Publisher {
             } else {
                 limparTela();
                 System.out.println("🔄 Preparando próximo turno...");
-                baralho.comprarCartas(1);
+                comprarCartasComEscolha(scanner, baralho);
                 continuar(scanner);
             }
         }

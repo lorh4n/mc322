@@ -7,6 +7,9 @@ public class CartaDano extends Carta {
    }
 
    @Override
+   public boolean precisaAlvo() { return true; }
+
+   @Override
    public void usar(Entidade usuario, Entidade alvo, Publisher publisher) {
       if (alvo != null) {
          alvo.receberDano(dano);

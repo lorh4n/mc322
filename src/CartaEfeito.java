@@ -9,6 +9,9 @@ public class CartaEfeito extends Carta {
     }
 
     @Override
+    public boolean precisaAlvo() { return tipoEfeito.equals("Veneno"); }
+
+    @Override
     public void usar(Entidade usuario, Entidade alvo, Publisher publisher) {
         if (tipoEfeito.equals("Veneno") && alvo != null) {
             Efeito veneno = new Veneno(alvo, this.acumulos, publisher);
