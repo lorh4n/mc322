@@ -68,12 +68,16 @@ O baralho contém três tipos de carta:
 
 **Compilar:**
 ```bash
-javac -d bin $(find src -name "*.java")
+javac -d bin $(find src/main/ -name "*.java")
+# ou
+gradle build
 ```
 
 **Executar:**
 ```bash
 java -cp bin App
+# ou
+gradle run
 ```
 
 > Os comandos devem ser executados a partir da raiz do repositório.
@@ -84,7 +88,7 @@ java -cp bin App
 
 ```
 mc322/
-├── src/
+├── src/main/
 │   ├── App.java           # Ponto de entrada e Publisher do Observer
 │   ├── Publisher.java     # Interface Publisher
 │   ├── Subscriber.java    # Interface Subscriber
