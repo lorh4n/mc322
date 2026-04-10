@@ -1,8 +1,24 @@
-# MC322 — Tarefa 3: Efeitos
+# MC322 — Tarefa 4: Ferramentas para Desenvolvimento
 
 Projeto desenvolvido para a disciplina **MC322 - Programação Orientada a Objetos** da Unicamp.
 
 Implementação de um sistema de combate por turnos inspirado em *Slay the Spire*, com herói, inimigos, cartas e um sistema de **efeitos acumuláveis** baseado no padrão de design **Observer**.
+
+---
+
+## Compilar e executar
+
+**Compilar:**
+```bash
+./gradlew build
+```
+
+**Executar:**
+```bash
+./gradlew run
+```
+
+> Os comandos devem ser executados a partir da raiz do repositório.
 
 ---
 
@@ -18,10 +34,27 @@ Após o turno do jogador, cada inimigo executa sua ação. O combate termina qua
 
 ---
 
-## Efeitos implementados
+## Cartas
+
+O baralho contém oito tipos de carta:
+
+| Tipo | Efeito |
+|------|--------|
+| Carta de Dano | Causa dano direto ao inimigo alvo |
+| Carta de Escudo | Concede escudo ao herói |
+| Carta de Efeito | Aplica Veneno no inimigo ou Regeneração no herói |
+| **Ataque Venenoso** | Causa dano imediato **e** aplica Veneno ao alvo |
+| **Golpe Duplo** | Golpeia o inimigo duas vezes seguidas |
+| **Dreno** | Causa dano ao inimigo e cura o herói simultaneamente |
+| **Extirpar** | Remove os acúmulos de Veneno do alvo e os converte em dano imediato |
+| **Escudo Regenerativo** | Concede escudo **e** aplica Regeneração ao herói |
+
+---
+
+## Efeitos
 
 ### Veneno
-Aplicado ao **inimigo**. A cada fim de turno do jogador, o alvo perde HP igual à quantidade de acúmulos, e os acúmulos reduzem em 1. O efeito termina quando os acúmulos chegam a zero.
+Aplicado ao **inimigo**. A cada fim de turno do jogador, o alvo perde HP igual à quantidade de acúmulos, e os acúmulos reduzem em 1.
 
 > Exemplo: 3 acúmulos de Veneno causam 3 de dano no 1º turno, 2 no 2º e 1 no 3º.
 
@@ -36,47 +69,17 @@ Aplicado ao **herói**. A cada fim de turno, o herói recupera HP igual à quant
 
 Os efeitos são implementados por meio do padrão de design **Observer**:
 
-- **Publisher** (`App`) — mantém uma lista de `Subscriber`s e os notifica quando eventos de combate ocorrem (ex: fim do turno do jogador).
-- **Subscriber** (`Efeito`) — cada efeito ativo é inscrito no Publisher e reage ao evento correto para aplicar seu comportamento.
+- **Publisher** (`App`) — mantém uma lista de `Subscriber`s e os notifica quando eventos de combate ocorrem.
+- **Subscriber** (`Efeito`) — cada efeito ativo é inscrito no Publisher e reage ao evento correto.
 - **TipoEvento** — enum com os eventos: `INICIO_TURNO_JOGADOR`, `FIM_TURNO_JOGADOR`, `INICIO_TURNO_INIMIGO`, `FIM_TURNO_INIMIGO`.
 
-Quando um efeito expira (acúmulos chegam a 0), ele se desincreve automaticamente do Publisher e é removido da entidade.
+Quando um efeito expira (acúmulos chegam a 0), ele se desinscreve automaticamente do Publisher.
 
 ---
 
 ## Inimigos
 
-Os inimigos possuem múltiplas ações e alternam entre elas a cada turno:
-
 - **Rato** — alterna entre atacar (causando dano fixo) e aplicar **Veneno** no herói.
-
----
-
-## Cartas
-
-O baralho contém três tipos de carta:
-
-| Tipo | Efeito |
-|------|--------|
-| Carta de Dano | Causa dano direto ao inimigo alvo |
-| Carta de Escudo | Concede escudo ao herói |
-| Carta de Efeito | Aplica Veneno no inimigo ou Regeneração no herói |
-
----
-
-## Compilar e executar
-
-**Compilar:**
-```bash
-javac -d bin $(find src -name "*.java")
-```
-
-**Executar:**
-```bash
-java -cp bin App
-```
-
-> Os comandos devem ser executados a partir da raiz do repositório.
 
 ---
 
@@ -84,23 +87,31 @@ java -cp bin App
 
 ```
 mc322/
-├── src/
-│   ├── App.java           # Ponto de entrada e Publisher do Observer
-│   ├── Publisher.java     # Interface Publisher
-│   ├── Subscriber.java    # Interface Subscriber
-│   ├── TipoEvento.java    # Enum de eventos do combate
-│   ├── Entidade.java      # Classe abstrata base (herói e inimigos)
-│   ├── Heroi.java         # O personagem do jogador
-│   ├── Inimigo.java       # Classe abstrata base dos inimigos
-│   ├── Rato.java          # Inimigo: alterna entre atacar e envenenar
-│   ├── Carta.java         # Classe abstrata base das cartas
-│   ├── CartaDano.java     # Carta de dano direto
-│   ├── CartaEscudo.java   # Carta de escudo
-│   ├── CartaEfeito.java   # Carta que aplica efeitos
-│   ├── Baralho.java       # Gerenciamento do baralho
-│   ├── Efeito.java        # Classe abstrata base dos efeitos (Subscriber)
-│   ├── Veneno.java        # Efeito: dano por turno
-│   └── Regeneracao.java   # Efeito: cura por turno
-├── bin/
+├── build.gradle
+├── settings.gradle
+├── gradlew / gradlew.bat
+├── gradle/wrapper/
+├── src/main/java/
+│   ├── App.java                  # Ponto de entrada e Publisher do Observer
+│   ├── Publisher.java            # Interface Publisher
+│   ├── Subscriber.java           # Interface Subscriber
+│   ├── TipoEvento.java           # Enum de eventos do combate
+│   ├── Entidade.java             # Classe abstrata base (herói e inimigos)
+│   ├── Heroi.java                # O personagem do jogador
+│   ├── Inimigo.java              # Classe abstrata base dos inimigos
+│   ├── Rato.java                 # Inimigo: alterna entre atacar e envenenar
+│   ├── Carta.java                # Classe abstrata base das cartas
+│   ├── CartaDano.java            # Carta de dano direto
+│   ├── CartaEscudo.java          # Carta de escudo
+│   ├── CartaEfeito.java          # Carta que aplica efeitos (Veneno/Regeneração)
+│   ├── CartaAtaqueVenenoso.java  # Dano + Veneno combinados
+│   ├── CartaGolpeDuplo.java      # Ataca duas vezes seguidas
+│   ├── CartaDreno.java           # Causa dano e cura o herói
+│   ├── CartaExtirpar.java        # Remove Veneno do alvo e converte em dano
+│   ├── CartaEscudoRegenero.java  # Escudo + Regeneração combinados
+│   ├── Baralho.java              # Gerenciamento do baralho
+│   ├── Efeito.java               # Classe abstrata base dos efeitos (Subscriber)
+│   ├── Veneno.java               # Efeito: dano por turno
+│   └── Regeneracao.java          # Efeito: cura por turno
 └── README.md
 ```

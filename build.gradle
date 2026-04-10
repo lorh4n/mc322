@@ -1,0 +1,25 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClass = 'App'
+}
+
+run {
+    standardInput = System.in
+}
+
+tasks.withType(Javadoc) {
+    // Garante que os acentos do português não quebrem na página gerada
+    options.encoding = 'UTF-8'
+    options.docEncoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    
+    // Opcional: Se quiser evitar que o build falhe por causa de tags Javadoc faltando
+    options.addStringOption('Xdoclint:none', '-quiet') 
+}

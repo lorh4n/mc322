@@ -1,6 +1,0 @@
-public enum TipoEvento {
-    INICIO_TURNO_JOGADOR,
-    FIM_TURNO_JOGADOR,
-    INICIO_TURNO_INIMIGO,
-    FIM_TURNO_INIMIGO
-}
