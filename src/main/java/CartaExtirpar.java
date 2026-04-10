@@ -43,13 +43,7 @@ public class CartaExtirpar extends Carta {
     public void usar(Entidade usuario, Entidade alvo, Publisher publisher) {
         if (alvo == null) return;
 
-        Efeito venenoEncontrado = null;
-        for (Efeito e : alvo.efeitos) {
-            if (e.getNome().equals("Veneno")) {
-                venenoEncontrado = e;
-                break;
-            }
-        }
+        Efeito venenoEncontrado = alvo.buscarEfeito("Veneno");
 
         if (venenoEncontrado != null) {
             int dano = venenoEncontrado.getAcumulos();

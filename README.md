@@ -36,18 +36,25 @@ Após o turno do jogador, cada inimigo executa sua ação. O combate termina qua
 
 ## Cartas
 
-O baralho contém oito tipos de carta:
+O baralho contém oito tipos de carta, sendo cinco delas novas nesta tarefa:
 
-| Tipo | Efeito |
-|------|--------|
+### Cartas base (labs anteriores)
+
+| Carta | Efeito |
+|-------|--------|
 | Carta de Dano | Causa dano direto ao inimigo alvo |
 | Carta de Escudo | Concede escudo ao herói |
 | Carta de Efeito | Aplica Veneno no inimigo ou Regeneração no herói |
-| **Ataque Venenoso** | Causa dano imediato **e** aplica Veneno ao alvo |
-| **Golpe Duplo** | Golpeia o inimigo duas vezes seguidas |
-| **Dreno** | Causa dano ao inimigo e cura o herói simultaneamente |
-| **Extirpar** | Remove os acúmulos de Veneno do alvo e os converte em dano imediato |
-| **Escudo Regenerativo** | Concede escudo **e** aplica Regeneração ao herói |
+
+### Novas cartas (Tarefa 4)
+
+| Carta | Custo | Comportamento em jogo |
+|-------|-------|----------------------|
+| **Ataque Venenoso** | 2 energia | Aplica dano imediato ao alvo **e** adiciona acúmulos de Veneno. Combina ofensividade instantânea com dano contínuo nos turnos seguintes. Herda de `Carta` e reutiliza o efeito `Veneno` já existente. |
+| **Golpe Duplo** | 2 energia | Ataca o inimigo **duas vezes** em sequência na mesma jogada, cada golpe passando pela lógica de escudo separadamente. Útil contra inimigos com pouco escudo. |
+| **Dreno** | 2 energia | Causa dano ao inimigo e **cura o herói** pelo mesmo valor. Permite sustentação em combates longos, interagindo com o sistema de vida e escudo. |
+| **Extirpar** | 1 energia | Busca o efeito de Veneno no alvo via `buscarEfeito()`. Se encontrar, **remove todos os acúmulos** e converte a quantidade em dano imediato. Se o alvo não estiver envenenado, causa apenas 2 de dano base. Interage diretamente com o sistema de efeitos. |
+| **Escudo Regenerativo** | 2 energia | Concede escudo ao herói **e** aplica o efeito de Regeneração, que cura HP a cada turno. Combina defesa imediata com recuperação contínua. Reutiliza tanto `ganharEscudo()` quanto o efeito `Regeneracao`. |
 
 ---
 
