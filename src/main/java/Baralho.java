@@ -212,41 +212,69 @@ public class Baralho {
 
         String[] nomesDano = {"Golpe", "Apunhalada", "Explosão Sangrenta", "Corte Rápido", "Fúria"};
         String[] nomesEscudo = {"Defesa", "Barreira", "Escudo de Ferro", "Esquiva", "Muralha"};
-        // NOVO: Nomes para as cartas de efeito
-        String[] nomesEfeitoVeneno = {"Frasco Venenoso", "Nuvem Tóxica", "Toque Letal"}; 
+        String[] nomesEfeitoVeneno = {"Frasco Venenoso", "Nuvem Tóxica", "Toque Letal"};
         String[] nomesEfeitoCura = {"Poção de Vida", "Bandagem Mágica", "Regeneração"};
+        String[] nomesAtaqueVenenoso = {"Lâmina Envenenada", "Picada Mortal", "Golpe Tóxico"};
+        String[] nomesGolpeDuplo = {"Rajada Dupla", "Duplo Corte", "Golpe Duplo"};
+        String[] nomesDreno = {"Drenar Vida", "Mordida Vampírica", "Sifão"};
+        String[] nomesExtirpar = {"Extirpar", "Purgar Veneno", "Drenar Toxina"};
+        String[] nomesEscudoRegenero = {"Bastião Vital", "Escudo Regenerativo", "Fortaleza Viva"};
 
         Random gerador = new Random();
         for (int i = 0; i < quantidade; i++) {
             int custo = gerador.nextInt(3) + 1;
             int valor = gerador.nextInt(6) + 2;
-            
-            int tipoDeCarta = gerador.nextInt(3); 
+
+            int tipoDeCarta = gerador.nextInt(8);
 
             if (tipoDeCarta == 0) {
                 String nome = nomesDano[gerador.nextInt(nomesDano.length)];
-                CartaDano carta = new CartaDano(nome, custo, "Causa " + valor + " de dano ao inimigo", valor);
-                adicionarCarta(carta);
+                adicionarCarta(new CartaDano(nome, custo, "Causa " + valor + " de dano ao inimigo", valor));
 
             } else if (tipoDeCarta == 1) {
                 String nome = nomesEscudo[gerador.nextInt(nomesEscudo.length)];
-                CartaEscudo carta = new CartaEscudo(nome, custo, "Ganha " + valor + " de Escudo", valor);
-                adicionarCarta(carta);
+                adicionarCarta(new CartaEscudo(nome, custo, "Ganha " + valor + " de Escudo", valor));
 
-            } else {
+            } else if (tipoDeCarta == 2) {
                 boolean sorteiaEfeito = gerador.nextBoolean();
-                
                 if (sorteiaEfeito) {
                     String nome = nomesEfeitoVeneno[gerador.nextInt(nomesEfeitoVeneno.length)];
-                    int acumulos = (valor / 2) + 1; 
-                    CartaEfeito carta = new CartaEfeito(nome, custo, "Aplica " + acumulos + " de Veneno", acumulos, "Veneno");
-                    adicionarCarta(carta);
+                    int acumulos = (valor / 2) + 1;
+                    adicionarCarta(new CartaEfeito(nome, custo, "Aplica " + acumulos + " de Veneno", acumulos, "Veneno"));
                 } else {
                     String nome = nomesEfeitoCura[gerador.nextInt(nomesEfeitoCura.length)];
                     int acumulos = (valor / 2) + 1;
-                    CartaEfeito carta = new CartaEfeito(nome, custo, "Ganha " + acumulos + " de Regeneração", acumulos, "Regeneracao");
-                    adicionarCarta(carta);
+                    adicionarCarta(new CartaEfeito(nome, custo, "Ganha " + acumulos + " de Regeneração", acumulos, "Regeneracao"));
                 }
+
+            } else if (tipoDeCarta == 3) {
+                String nome = nomesAtaqueVenenoso[gerador.nextInt(nomesAtaqueVenenoso.length)];
+                int acumulos = (valor / 2) + 1;
+                adicionarCarta(new CartaAtaqueVenenoso(nome, custo,
+                    "Causa " + valor + " de dano e aplica " + acumulos + " de Veneno", valor, acumulos));
+
+            } else if (tipoDeCarta == 4) {
+                String nome = nomesGolpeDuplo[gerador.nextInt(nomesGolpeDuplo.length)];
+                int danoPorGolpe = Math.max(2, valor / 2);
+                adicionarCarta(new CartaGolpeDuplo(nome, custo,
+                    "Golpeia 2x causando " + danoPorGolpe + " de dano cada", danoPorGolpe));
+
+            } else if (tipoDeCarta == 5) {
+                String nome = nomesDreno[gerador.nextInt(nomesDreno.length)];
+                int cura = Math.max(1, valor / 2);
+                adicionarCarta(new CartaDreno(nome, custo,
+                    "Causa " + valor + " de dano e cura " + cura + " de HP", valor, cura));
+
+            } else if (tipoDeCarta == 6) {
+                String nome = nomesExtirpar[gerador.nextInt(nomesExtirpar.length)];
+                adicionarCarta(new CartaExtirpar(nome, 1,
+                    "Remove Veneno do alvo e converte em dano"));
+
+            } else {
+                String nome = nomesEscudoRegenero[gerador.nextInt(nomesEscudoRegenero.length)];
+                int acumulos = (valor / 2) + 1;
+                adicionarCarta(new CartaEscudoRegenero(nome, custo,
+                    "Ganha " + valor + " de Escudo e " + acumulos + " de Regeneração", valor, acumulos));
             }
         }
     }
