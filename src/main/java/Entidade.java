@@ -17,7 +17,7 @@ public abstract class Entidade {
    private int vida_inicial;
    
    /** Lista de efeitos de status ativos nesta entidade. */
-   protected List<Efeito> efeitos = new ArrayList<>();
+   private List<Efeito> efeitos = new ArrayList<>();
 
    /**
     * Construtor padrão da Entidade.
@@ -69,6 +69,20 @@ public abstract class Entidade {
     */
    public void removerEfeito(Efeito e) {
       efeitos.remove(e);
+   }
+
+   /**
+    * Busca um efeito ativo pelo nome.
+    * @param nome O nome do efeito procurado (ex: "Veneno").
+    * @return O efeito encontrado, ou {@code null} se não houver.
+    */
+   public Efeito buscarEfeito(String nome) {
+      for (Efeito e : efeitos) {
+         if (e.getNome().equals(nome)) {
+            return e;
+         }
+      }
+      return null;
    }
 
    /**
