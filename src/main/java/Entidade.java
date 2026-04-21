@@ -185,4 +185,24 @@ public abstract class Entidade {
       if(this.vida > this.vida_inicial) this.vida = this.vida_inicial;
       System.out.println("> " + this.getNome() + " recuperou " + valor + " de HP!");
    }
+
+   /**
+    * Obtém a lista de efeitos de status atualmente ativos na entidade.
+    * @return Lista de efeitos ativos.
+    */
+   public List<Efeito> getEfeitos() {
+      return this.efeitos;
+   }
+
+   /**
+    * Reinicia o estado transitório da entidade entre batalhas.
+    * <p>
+    * Remove todos os efeitos de status ativos e zera o escudo. A vida atual é
+    * preservada entre batalhas, pois faz parte da progressão do jogador.
+    * </p>
+    */
+   public void resetarEstadoBatalha() {
+      this.efeitos.clear();
+      this.escudo = 0;
+   }
 }

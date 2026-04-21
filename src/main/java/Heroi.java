@@ -20,7 +20,7 @@ public class Heroi extends Entidade {
     * * @param nome O nome de exibição do herói.
     * @param vida Os pontos de vida iniciais (que também definirão o HP máximo).
     */
-   Heroi(String nome, int vida){
+   public Heroi(String nome, int vida){
       super(nome, vida);
    }
    

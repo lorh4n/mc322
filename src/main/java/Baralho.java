@@ -173,6 +173,19 @@ public class Baralho {
     }
 
     /**
+     * Reinicia o baralho para o começo de uma nova batalha: move todas as cartas
+     * da mão e do descarte de volta para a pilha de compra e embaralha.
+     * A composição do baralho é preservada entre batalhas (progressão do jogador).
+     */
+    public void resetarParaNovaBatalha() {
+        pilhaCompra.addAll(maoJogador);
+        pilhaCompra.addAll(pilhaDescarte);
+        maoJogador.clear();
+        pilhaDescarte.clear();
+        Collections.shuffle(pilhaCompra);
+    }
+
+    /**
      * @return O número de cartas restantes na pilha de compra.
      */
     public int tamanhoCompra() {
