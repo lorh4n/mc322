@@ -1,9 +1,15 @@
 plugins {
     id 'application'
+    id 'jacoco'
 }
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 application {
@@ -14,12 +20,25 @@ run {
     standardInput = System.in
 }
 
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+
 tasks.withType(Javadoc) {
     // Garante que os acentos do português não quebrem na página gerada
     options.encoding = 'UTF-8'
     options.docEncoding = 'UTF-8'
     options.charSet = 'UTF-8'
-    
-    // Opcional: Se quiser evitar que o build falhe por causa de tags Javadoc faltando
-    options.addStringOption('Xdoclint:none', '-quiet') 
+
+    // Evita que o build falhe por causa de tags Javadoc faltando
+    options.addStringOption('Xdoclint:none', '-quiet')
 }
