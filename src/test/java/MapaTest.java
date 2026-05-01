@@ -6,64 +6,63 @@ import java.util.List;
 public class MapaTest {
 
     @Test
-    public void raizSemBatalhaTemFilhos() {
-        Mapa m = Mapa.gerarPadrao();
+    public void raizSemEventoTemFilhos() {
+        Heroi h = new Heroi("H", 10);
+        Baralho b = new Baralho();
+        Mapa m = Mapa.gerarPadrao(h, b);
         NoMapa raiz = m.getRaiz();
-        assertFalse(raiz.temBatalha());
+        assertNull(raiz.getEvento());
         assertFalse(raiz.getFilhos().isEmpty());
         assertEquals(0, raiz.getProfundidade());
     }
 
     @Test
     public void noFilhoDeveTerProfundidadeMaior() {
-        NoMapa pai = new NoMapa("pai", 1, null, false);
-        NoMapa filhoInvalido = new NoMapa("filho", 1, null, false);
+        NoMapa pai = new NoMapa("pai", 1, null);
+        NoMapa filhoInvalido = new NoMapa("filho", 1, null);
         assertThrows(IllegalArgumentException.class, () -> pai.adicionarFilho(filhoInvalido));
 
-        NoMapa filhoValido = new NoMapa("filho2", 2, null, false);
+        NoMapa filhoValido = new NoMapa("filho2", 2, null);
         pai.adicionarFilho(filhoValido);
         assertEquals(1, pai.getFilhos().size());
     }
 
     @Test
     public void marcarVisitadoAlteraEstado() {
-        NoMapa n = new NoMapa("n", 1, null, false);
+        NoMapa n = new NoMapa("n", 1, null);
         assertFalse(n.isVisitado());
         n.marcarVisitado();
         assertTrue(n.isVisitado());
     }
 
     @Test
-    public void criarInimigosUsaFabrica() {
-        NoMapa n = new NoMapa("n", 1, () -> {
+    public void noPodeConterBatalha() {
+        Heroi h = new Heroi("H", 10);
+        Baralho b = new Baralho();
+        Batalha bat = new Batalha(h, b, () -> {
             List<Inimigo> l = new ArrayList<>();
             l.add(new Rato(5, 1));
-            l.add(new Rato(4, 1));
             return l;
-        }, false);
-        assertTrue(n.temBatalha());
-        List<Inimigo> a = n.criarInimigos();
-        List<Inimigo> b = n.criarInimigos();
-        assertEquals(2, a.size());
-        assertNotSame(a.get(0), b.get(0), "Fábrica deve gerar instâncias novas");
+        });
+        NoMapa n = new NoMapa("n", 1, bat);
+        assertNotNull(n.getEvento());
+        assertTrue(n.getEvento() instanceof Batalha);
     }
 
     @Test
-    public void mapaPadraoAlcancaNoFinal() {
-        Mapa m = Mapa.gerarPadrao();
-        boolean achouFinal = buscarFinal(m.getRaiz());
-        assertTrue(achouFinal, "Mapa padrão deve conter pelo menos um nó final");
-    }
-
-    private boolean buscarFinal(NoMapa n) {
-        if (n.isEhFinal()) return true;
-        for (NoMapa f : n.getFilhos()) if (buscarFinal(f)) return true;
-        return false;
+    public void mapaPadraoContemEventosDeProgressao() {
+        Heroi h = new Heroi("H", 10);
+        Baralho b = new Baralho();
+        Mapa m = Mapa.gerarPadrao(h, b);
+        assertTrue(contemEvento(m.getRaiz(), Loja.class));
+        assertTrue(contemEvento(m.getRaiz(), Escolha.class));
     }
 
     @Test
     public void profundidadeSempreAumentaNoMapaPadrao() {
-        Mapa m = Mapa.gerarPadrao();
+        Heroi h = new Heroi("H", 10);
+        Baralho b = new Baralho();
+        Mapa m = Mapa.gerarPadrao(h, b);
         assertTrue(profundidadeCresce(m.getRaiz()));
     }
 
@@ -73,5 +72,13 @@ public class MapaTest {
             if (!profundidadeCresce(f)) return false;
         }
         return true;
+    }
+
+    private boolean contemEvento(NoMapa n, Class<?> tipo) {
+        if (n.getEvento() != null && tipo.isInstance(n.getEvento())) return true;
+        for (NoMapa f : n.getFilhos()) {
+            if (contemEvento(f, tipo)) return true;
+        }
+        return false;
     }
 }

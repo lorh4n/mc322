@@ -72,6 +72,27 @@ public class BatalhaTest {
     }
 
     @Test
+    public void recompensaAutomaticaConcedeOuroAposVitoria() {
+        Heroi h = new Heroi("Herói", 50);
+        List<Inimigo> inis = new ArrayList<>();
+        inis.add(new Rato(3, 1));
+        Batalha b = new Batalha(h, inis, baralhoSoDeDano(10, 5));
+        assertTrue(b.resolverAutomatico(20));
+        assertEquals(20, h.getOuro());
+    }
+
+    @Test
+    public void reliquiaObservaInicioDaBatalha() {
+        Heroi h = new Heroi("Herói", 50);
+        h.adicionarReliquia(new ReliquiaEscudoInicial(h));
+        List<Inimigo> inis = new ArrayList<>();
+        inis.add(new Rato(3, 1));
+        Batalha b = new Batalha(h, inis, baralhoSoDeDano(10, 5));
+        assertTrue(b.resolverAutomatico(20));
+        assertTrue(h.getEscudo() >= 4);
+    }
+
+    @Test
     public void algumInimigoVivoRetornaFalseQuandoTodosMortos() {
         Heroi h = new Heroi("H", 10);
         List<Inimigo> inis = new ArrayList<>();

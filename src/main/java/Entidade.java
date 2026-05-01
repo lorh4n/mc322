@@ -141,6 +141,14 @@ public abstract class Entidade {
    }
 
    /**
+    * Obtém a vida máxima definida na criação da entidade.
+    * @return A vida máxima da entidade.
+    */
+   public int getVidaMaxima() {
+      return vida_inicial;
+   }
+
+   /**
     * Obtém os pontos de escudo atuais da entidade.
     * @return A quantidade de escudo atual.
     */
