@@ -1,49 +1,56 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Supplier;
 
 /**
  * Encapsula a lógica de um combate individual entre o herói e uma lista de inimigos.
- * <p>
- * A Batalha é auto-suficiente: implementa {@link Publisher} para gerenciar seus
- * próprios efeitos de status durante a duração do combate, garantindo que eventos
- * de uma batalha não interfiram em outras. O herói e o baralho são passados por
- * referência, permitindo que seu estado (vida restante, composição do baralho)
- * seja preservado entre batalhas.
- * </p>
  */
-public class Batalha implements Publisher {
+public class Batalha extends Evento implements Publisher {
 
     private final Heroi heroi;
-    private final List<Inimigo> inimigos;
+    private List<Inimigo> inimigos;
     private final Baralho baralho;
     private final int energiaMax;
+    private final Supplier<List<Inimigo>> fabricaInimigos;
 
     private final List<Subscriber> subscribers = new ArrayList<>();
     private final List<Subscriber> removerFila = new ArrayList<>();
 
     /**
-     * Cria uma nova batalha.
-     * @param heroi Herói que participará do combate.
-     * @param inimigos Lista de inimigos a serem enfrentados.
-     * @param baralho Baralho do herói (mantido entre batalhas).
+     * Cria uma nova batalha com fábrica de inimigos (Requisito Tarefa 6).
+     */
+    public Batalha(Heroi heroi, Baralho baralho, Supplier<List<Inimigo>> fabricaInimigos) {
+        this(heroi, baralho, fabricaInimigos, 3);
+    }
+
+    public Batalha(Heroi heroi, Baralho baralho, Supplier<List<Inimigo>> fabricaInimigos, int energiaMax) {
+        this.heroi = heroi;
+        this.baralho = baralho;
+        this.fabricaInimigos = fabricaInimigos;
+        this.energiaMax = energiaMax;
+    }
+
+    /**
+     * Construtor de compatibilidade — aceita lista direta de inimigos (usado em testes).
      */
     public Batalha(Heroi heroi, List<Inimigo> inimigos, Baralho baralho) {
         this(heroi, inimigos, baralho, 3);
     }
 
-    /**
-     * Cria uma nova batalha com energia customizada.
-     * @param heroi Herói que participará do combate.
-     * @param inimigos Lista de inimigos a serem enfrentados.
-     * @param baralho Baralho do herói.
-     * @param energiaMax Energia máxima por turno.
-     */
     public Batalha(Heroi heroi, List<Inimigo> inimigos, Baralho baralho, int energiaMax) {
         this.heroi = heroi;
-        this.inimigos = inimigos;
         this.baralho = baralho;
+        this.fabricaInimigos = () -> new ArrayList<>(inimigos);
         this.energiaMax = energiaMax;
+        this.inimigos = inimigos; // já inicializa direto para resolverAutomatico
+    }
+
+    @Override
+    public boolean iniciar(Heroi heroi, Scanner scanner) {
+        // Inicializa os inimigos usando a fábrica apenas quando o evento começa
+        this.inimigos = fabricaInimigos.get();
+        return executar(scanner);
     }
 
     @Override
@@ -110,7 +117,11 @@ public class Batalha implements Publisher {
             for (Inimigo ini : inimigos) if (ini.estaVivo()) ini.executarAcao(heroi, this);
             notificar(TipoEvento.FIM_TURNO_INIMIGO);
         }
-        return heroi.estaVivo() && !algumInimigoVivo();
+        boolean venceu = heroi.estaVivo() && !algumInimigoVivo();
+        if (venceu) {
+            processarVitoria(null);
+        }
+        return venceu;
     }
 
     private Inimigo primeiroInimigoVivo() {
@@ -121,6 +132,10 @@ public class Batalha implements Publisher {
     private void prepararInicio() {
         heroi.resetarEstadoBatalha();
         baralho.resetarParaNovaBatalha();
+        for (Reliquia reliquia : heroi.getReliquias()) {
+            reliquia.prepararParaBatalha(this);
+        }
+        notificar(TipoEvento.INICIO_BATALHA);
     }
 
     /**
@@ -141,7 +156,7 @@ public class Batalha implements Publisher {
         continuar(scanner);
 
         while (algumInimigoVivo() && heroi.estaVivo()) {
-            limparTela();
+            limparTela(scanner);
             heroi.setEscudo(0);
             energia = energiaMax;
             notificar(TipoEvento.INICIO_TURNO_JOGADOR);
@@ -189,13 +204,13 @@ public class Batalha implements Publisher {
                     continuar(scanner);
                 }
 
-                if (turnoAtivo && algumInimigoVivo() && heroi.estaVivo()) limparTela();
+                if (turnoAtivo && algumInimigoVivo() && heroi.estaVivo()) limparTela(scanner);
             }
 
             notificar(TipoEvento.FIM_TURNO_JOGADOR);
 
             if (algumInimigoVivo() && heroi.estaVivo()) {
-                limparTela();
+                limparTela(scanner);
                 notificar(TipoEvento.INICIO_TURNO_INIMIGO);
                 System.out.println("\n" + Rato.CorOutput + "╔══════════════════════════════════════╗");
                 System.out.println("║         TURNO DOS INIMIGOS           ║");
@@ -209,7 +224,7 @@ public class Batalha implements Publisher {
             }
 
             if (algumInimigoVivo() && heroi.estaVivo()) {
-                limparTela();
+                limparTela(scanner);
                 System.out.println("🔄 Preparando próximo turno...");
                 comprarCartasComEscolha(scanner);
                 continuar(scanner);
@@ -217,14 +232,55 @@ public class Batalha implements Publisher {
         }
 
         boolean venceu = heroi.estaVivo() && !algumInimigoVivo();
-        limparTela();
+        limparTela(scanner);
         if (venceu) {
             System.out.println("\n🏆 [ VITÓRIA ] VOCÊ VENCEU A BATALHA!");
+            processarVitoria(scanner);
         } else {
             System.out.println("\n💀 [ DERROTA ] VOCÊ PERDEU!");
         }
         continuar(scanner);
         return venceu;
+    }
+
+    private void processarVitoria(Scanner scanner) {
+        notificar(TipoEvento.VITORIA_BATALHA);
+        concederRecompensa(scanner);
+    }
+
+    private void concederRecompensa(Scanner scanner) {
+        int ouroGanho = 20;
+        heroi.adicionarOuro(ouroGanho);
+        System.out.println("Recompensa: +" + ouroGanho + " ouro. Total: " + heroi.getOuro());
+
+        if (scanner == null) return;
+
+        List<Carta> opcoes = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            opcoes.add(CartaFactory.criarAleatoria());
+        }
+
+        System.out.println("\nEscolha uma carta para adicionar ao baralho:");
+        for (int i = 0; i < opcoes.size(); i++) {
+            Carta carta = opcoes.get(i);
+            System.out.printf("[%d] %s (Custo: %d) - %s%n",
+                i, carta.getNome(), carta.getCusto(), carta.getDescricao());
+        }
+        System.out.println("[-1] Pular recompensa de carta");
+        System.out.print("Escolha: ");
+
+        try {
+            int escolha = Integer.parseInt(scanner.nextLine().trim());
+            if (escolha >= 0 && escolha < opcoes.size()) {
+                Carta escolhida = opcoes.get(escolha);
+                baralho.adicionarCarta(escolhida);
+                System.out.println("Carta adicionada: " + escolhida.getNome());
+            } else {
+                System.out.println("Você pulou a recompensa de carta.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida. Recompensa de carta pulada.");
+        }
     }
 
     private void exibirEstado(int energia) {
@@ -258,9 +314,15 @@ public class Batalha implements Publisher {
         int disponiveis = baralho.tamanhoCompra() + baralho.tamanhoDescarte();
         int maxCompra = Math.min(5, disponiveis);
         if (maxCompra == 0) {
-            System.out.println("Sem cartas disponíveis para comprar.");
+            if (scanner != null) System.out.println("Sem cartas disponíveis para comprar.");
             return;
         }
+        
+        if (scanner == null) {
+            baralho.comprarCartas(3); // Default for automatic tests
+            return;
+        }
+
         System.out.printf("Quantas cartas deseja comprar? (1-%d): ", maxCompra);
         int quantidade = 1;
         try {
@@ -312,11 +374,13 @@ public class Batalha implements Publisher {
     }
 
     private void continuar(Scanner scanner) {
+        if (scanner == null) return;
         System.out.println("\n[ Pressione ENTER para continuar... ]");
         scanner.nextLine();
     }
 
-    private void limparTela() {
+    private void limparTela(Scanner scanner) {
+        if (scanner == null) return;
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }

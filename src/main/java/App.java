@@ -25,27 +25,29 @@ public class App {
         baralho.popularBaralho(TAMANHO_BARALHO);
         baralho.embaralhar();
 
-        Mapa mapa = Mapa.gerarPadrao();
+        Mapa mapa = Mapa.gerarPadrao(heroi, baralho);
         NoMapa atual = mapa.getRaiz();
         atual.marcarVisitado();
 
         exibirAberturaJogo();
 
         while (heroi.estaVivo()) {
-            if (atual.temBatalha()) {
+            Evento evento = atual.getEvento();
+            if (evento != null) {
                 System.out.println("\n>>> Entrando em: " + atual.getNome() + " <<<");
-                List<Inimigo> inimigos = atual.criarInimigos();
-                Batalha batalha = new Batalha(heroi, inimigos, baralho);
-                boolean venceu = batalha.executar(scanner);
-                if (!venceu) {
+                exibirEstadoPersistente(heroi, baralho);
+                boolean sobreviveu = evento.iniciar(heroi, scanner);
+                
+                if (!sobreviveu || !heroi.estaVivo()) {
                     System.out.println("\n💀 FIM DE JOGO — você caiu em " + atual.getNome() + ".");
                     break;
                 }
-                if (atual.isEhFinal()) {
-                    System.out.println("\n🏆 VITÓRIA FINAL! Você completou a jornada em "
-                        + atual.getNome() + " com " + heroi.getVida() + " HP restantes.");
-                    break;
-                }
+            }
+
+            if (atual.getFilhos().isEmpty()) {
+                System.out.println("\n🏆 VITÓRIA FINAL! Você completou a jornada em "
+                    + atual.getNome() + " com " + heroi.getVida() + " HP restantes.");
+                break;
             }
 
             NoMapa proximo = escolherProximoNo(scanner, atual);
@@ -84,8 +86,7 @@ public class App {
         System.out.println("╠══════════════════════════════════════╣");
         for (int i = 0; i < disponiveis.size(); i++) {
             NoMapa n = disponiveis.get(i);
-            String tag = n.isEhFinal() ? " [FINAL]" : "";
-            System.out.printf("║ [%d] %-32s ║%n", i, n.getNome() + tag);
+            System.out.printf("║ [%d] %-32s ║%n", i, n.getNome());
         }
         System.out.println("╚══════════════════════════════════════╝");
         System.out.print("Escolha: ");
@@ -102,12 +103,19 @@ public class App {
 
     private void exibirAberturaJogo() {
         System.out.println("╔══════════════════════════════════════╗");
-        System.out.println("║   AVENTURAS PELO MAPA — MC322         ║");
+        System.out.println("║   AVENTURAS PELO MAPA — MC322        ║");
         System.out.println("╠══════════════════════════════════════╣");
         System.out.println("║ Sua vida e baralho persistem entre   ║");
-        System.out.println("║ batalhas. Escolha seu caminho com    ║");
-        System.out.println("║ cuidado até chegar ao nó final.      ║");
+        System.out.println("║ eventos. Vença batalhas, compre      ║");
+        System.out.println("║ melhorias e escolha seu caminho.     ║");
         System.out.println("╚══════════════════════════════════════╝");
+    }
+
+    private void exibirEstadoPersistente(Heroi heroi, Baralho baralho) {
+        System.out.println("HP: " + heroi.getVida() + "/" + heroi.getVidaMaxima()
+            + " | Ouro: " + heroi.getOuro()
+            + " | Cartas: " + baralho.listarTodasCartas().size()
+            + " | Relíquias: " + heroi.getReliquias().size());
     }
 
     /**

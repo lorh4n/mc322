@@ -34,5 +34,17 @@ public enum TipoEvento {
      * Ideal para ativar efeitos contínuos que afligem os inimigos (como Veneno),
      * fazendo com que sofram o dano antes de devolver a vez para o jogador.
      */
-    FIM_TURNO_INIMIGO
+    FIM_TURNO_INIMIGO,
+
+    /**
+     * Disparado quando uma batalha começa, antes do primeiro turno do jogador.
+     * Relíquias permanentes podem usar este evento para preparar bônus iniciais.
+     */
+    INICIO_BATALHA,
+
+    /**
+     * Disparado quando o herói vence uma batalha, antes da recompensa ser exibida.
+     * Relíquias permanentes podem usar este evento para conceder bônus pós-combate.
+     */
+    VITORIA_BATALHA
 }
